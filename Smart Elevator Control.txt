@@ -1,0 +1,69 @@
+title Smart Elevator Control
+buildings [color: blue] {
+  id serial pk
+  building_name string
+  building_location string
+}
+floors [color: orange] {
+  id serial pk
+  building_id serial fk
+  floor_number int
+}
+elevators [color: green] {
+  id serial pk
+  building_id serial fk
+  elevator_number int
+  status enum('idle', 'moving', 'maintenance')// idle, moving, maintenance
+}
+elevator_floors [color: yellow] {
+  id serial pk
+  elevator_id serial fk
+  floor_id serial fk
+}
+
+floor_requests [color: blue] {
+  id serial pk
+  request_time timestamp
+  source_floor_id serial fk
+  destination_floor_id serial fk
+  status enum('pending', 'assigned', 'completed') // pending, assigned, completed
+}
+ride_assignments [color: orange] {
+  id serial pk
+  floor_request_id serial fk
+  elevator_id serial fk
+  createdAt timestamp
+}
+ride_logs [color: yellow] {
+  id serial pk
+  elevator_id serial fk
+  floor_request_id serial fk
+  source_floor_id serial fk
+  destination_floor_id serial fk
+
+  start_time timestamp
+  end_time timestamp
+}
+maintenance_logs [color: purple] {
+  id serial pk
+  elevator_id serial fk
+  reason text
+
+  start_time timestamp
+  end_time timestamp
+}
+
+floors.building_id > buildings.id
+floor_requests.id > floors.id
+
+elevators.building_id > buildings.id
+elevator_floors.elevator_id > elevators.id
+elevator_floors.floor_id > floors.id
+
+ride_assignments.floor_request_id > floor_requests.id
+ride_assignments.elevator_id > elevators.id
+ride_logs.elevator_id > elevators.id
+ride_logs.floor_request_id > floor_requests.id
+ride_logs.id > floors.id
+
+maintenance_logs.elevator_id > elevators.id
